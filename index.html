@@ -127,7 +127,14 @@
 
     </div>
 
-  </div>
+<!-- Blog Section -->
+<div id="blogContainer" class="hidden max-w-3xl mx-auto mt-10 bg-white p-6 rounded-2xl shadow">
+  <h1 id="blogTitle" class="text-3xl font-bold mb-4"></h1>
+  <div id="blogContent" class="text-gray-700 space-y-4 text-sm leading-relaxed"></div>
+
+  <!-- Back Button -->
+  <a href="/" class="inline-block mt-6 text-blue-600 hover:underline">← Back to calculator</a>
+</div>
 
 </div>
 
@@ -360,6 +367,42 @@ function renderInternalLinks(currentCountry, currentPurpose) {
   }
 
   linksContainer.appendChild(grid);
+}
+
+const blogData = {
+  "moving-to-canada-cost-guide": {
+    title: "Moving to Canada: Full Cost Breakdown",
+    content: `
+      <p>Moving to Canada involves more than just visa fees.</p>
+      <p>You need to consider rent deposits, insurance, and living expenses.</p>
+      <p>Use our calculator to estimate your real costs before moving.</p>
+    `
+  },
+  "study-abroad-hidden-costs": {
+    title: "Hidden Costs of Studying Abroad",
+    content: `
+      <p>Many students underestimate the cost of studying abroad.</p>
+      <p>Hidden costs include housing deposits, paperwork, and transport.</p>
+      <p>Planning ahead can save you thousands.</p>
+    `
+  }
+};
+
+function showBlog(slug) {
+  const blog = blogData[slug];
+
+  if (!blog) return;
+
+  // Hide calculator UI
+  document.querySelector('.max-w-5xl').classList.add('hidden');
+
+  // Show blog UI
+  document.getElementById('blogContainer').classList.remove('hidden');
+
+  document.getElementById('blogTitle').innerText = blog.title;
+  document.getElementById('blogContent').innerHTML = blog.content;
+
+  document.title = blog.title;
 }
 
 window.onload = function() {
