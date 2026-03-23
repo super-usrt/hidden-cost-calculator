@@ -418,11 +418,13 @@ function showBlog(slug) {
 
   if (!blog) return;
 
-  // Hide calculator UI
-  document.getElementById('app').classList.add('hidden');
+  // Hide calculator safely
+  const appEl = document.getElementById('app');
+  if (appEl) appEl.classList.add('hidden');
 
   // Show blog UI
-  document.getElementById('blogContainer').classList.remove('hidden');
+  const blogEl = document.getElementById('blogContainer');
+  if (blogEl) blogEl.classList.remove('hidden');
 
   document.getElementById('blogTitle').innerText = blog.title;
   document.getElementById('blogContent').innerHTML = blog.content;
