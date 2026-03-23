@@ -20,7 +20,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-<div class="max-w-5xl mx-auto p-6">
+<div class="max-w-5xl mx-auto" id="app p-6">
 
   <div class="flex items-center justify-center mb-10 gap-3">
     <!-- Logo (SVG) -->
@@ -419,7 +419,7 @@ function showBlog(slug) {
   if (!blog) return;
 
   // Hide calculator UI
-  document.querySelector('.max-w-5xl').classList.add('hidden');
+  document.getElementById('app').classList.add('hidden');
 
   // Show blog UI
   document.getElementById('blogContainer').classList.remove('hidden');
