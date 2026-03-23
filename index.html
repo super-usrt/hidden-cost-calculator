@@ -191,16 +191,29 @@ function getFallback() {
 function parseURL() {
   const pathParts = window.location.pathname.split('/').filter(Boolean);
 
-  // BLOG ROUTE FIX (force override everything)
+  const appEl = document.getElementById('app');
+  const blogEl = document.getElementById('blogContainer');
+
+  // BLOG ROUTE
   if (pathParts[0] === 'blog' && pathParts[1]) {
-    showBlog(pathParts[1]);
-
-    // HARD hide calculator
-    const appEl = document.getElementById('app');
     if (appEl) appEl.style.display = 'none';
-
+    if (blogEl) blogEl.classList.remove('hidden');
+    showBlog(pathParts[1]);
     return;
   }
+
+  // DEFAULT (calculator)
+  if (appEl) appEl.style.display = 'block';
+  if (blogEl) blogEl.classList.add('hidden');
+
+  let country = pathParts[0];
+  let purpose = pathParts[1];
+
+  if (country) document.getElementById('country').value = country;
+  if (purpose) document.getElementById('purpose').value = purpose;
+
+  if (country && purpose) analyze(false);
+}
 
   let country = pathParts[0];
   let purpose = pathParts[1];
@@ -429,14 +442,8 @@ const blogData = {
 
 function showBlog(slug) {
   const blog = blogData[slug];
-
   if (!blog) return;
 
-  // Hide calculator safely
-  const appEl = document.getElementById('app');
-  if (appEl) appEl.classList.add('hidden');
-
-  // Show blog UI
   const blogEl = document.getElementById('blogContainer');
   if (blogEl) blogEl.classList.remove('hidden');
 
