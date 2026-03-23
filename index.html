@@ -139,6 +139,26 @@
 </div>
 
 <script>
+
+// BLOG DATA (add your articles here)
+const blogData = {
+  "moving-to-canada-cost-guide": {
+    title: "Moving to Canada: Full Cost Breakdown",
+    content: `
+      <p>Moving to Canada involves more than just visa fees.</p>
+      <p>You need to consider rent deposits, insurance, and living expenses.</p>
+      <p>Use our calculator to estimate your real costs before moving.</p>
+    `
+  },
+  "study-abroad-hidden-costs": {
+    title: "Hidden Costs of Studying Abroad",
+    content: `
+      <p>Many students underestimate the cost of studying abroad.</p>
+      <p>Hidden costs include housing deposits, paperwork, and transport.</p>
+      <p>Planning ahead can save you thousands.</p>
+    `
+  }
+};
 const data = {
   canada: {
     study: {
@@ -169,11 +189,16 @@ function getFallback() {
 }
 
 function parseURL() {
-  const params = new URLSearchParams(window.location.search);
   const pathParts = window.location.pathname.split('/').filter(Boolean);
 
-  let country = params.get('country') || pathParts[0];
-  let purpose = params.get('purpose') || pathParts[1];
+  // Handle blog pages FIRST
+  if (pathParts[0] === 'blog' && pathParts[1]) {
+    showBlog(pathParts[1]);
+    return;
+  }
+
+  let country = pathParts[0];
+  let purpose = pathParts[1];
 
   if (country) document.getElementById('country').value = country;
   if (purpose) document.getElementById('purpose').value = purpose;
