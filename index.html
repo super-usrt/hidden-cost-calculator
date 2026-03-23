@@ -191,11 +191,25 @@ function getFallback() {
 function parseURL() {
   const pathParts = window.location.pathname.split('/').filter(Boolean);
 
-  // Handle blog pages FIRST
+  // BLOG ROUTE FIX (force override everything)
   if (pathParts[0] === 'blog' && pathParts[1]) {
     showBlog(pathParts[1]);
+
+    // HARD hide calculator
+    const appEl = document.getElementById('app');
+    if (appEl) appEl.style.display = 'none';
+
     return;
   }
+
+  let country = pathParts[0];
+  let purpose = pathParts[1];
+
+  if (country) document.getElementById('country').value = country;
+  if (purpose) document.getElementById('purpose').value = purpose;
+
+  if (country && purpose) analyze(false);
+}
 
   let country = pathParts[0];
   let purpose = pathParts[1];
