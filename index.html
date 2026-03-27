@@ -3,459 +3,174 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hidden Cost SaaS</title>
+  <title>Hidden Cost Calculator</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%232563eb'/><stop offset='100%' stop-color='%231e40af'/></linearGradient></defs><rect width='48' height='48' rx='12' fill='url(%23g)'/><text x='50%' y='55%' text-anchor='middle' fill='white' font-size='18' font-weight='bold' dy='.3em'>HC</text></svg>">
-
-  <!-- SEO Meta -->
-  <meta name="description" id="meta-desc" content="Estimate hidden costs of moving abroad including visa, rent, and setup expenses.">
-  
-  <!-- Open Graph -->
-  <meta property="og:title" id="og-title" content="Hidden Cost Calculator">
-  <meta property="og:description" id="og-desc" content="Discover real hidden costs before moving abroad.">
-  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='12' fill='%232563eb'/><text x='50%' y='55%' text-anchor='middle' fill='white' font-size='18' font-weight='bold' dy='.3em'>HC</text></svg>">
 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-50 text-gray-800">
 
-<div class="max-w-5xl mx-auto" id="app p-6">
+<div class="max-w-5xl mx-auto p-6">
 
+  <!-- Header -->
   <div class="flex items-center justify-center mb-10 gap-3">
-    <!-- Logo (SVG) -->
-    <div class="flex items-center gap-3">
-      <svg width="42" height="42" viewBox="0 0 48 48" class="rounded-xl shadow">
-        <defs>
-          <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#2563eb" />
-            <stop offset="100%" stop-color="#1e40af" />
-          </linearGradient>
-        </defs>
-        <rect width="48" height="48" rx="12" fill="url(#grad)" />
-        <text x="50%" y="55%" text-anchor="middle" fill="white" font-size="18" font-weight="bold" dy=".3em">HC</text>
-      </svg>
-
-      <!-- Brand Name -->
-      <div class="text-left">
-        <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Hidden Cost</h1>
-        <p class="text-gray-600 text-sm">Plan smarter. Avoid surprises.</p>
-      </div>
+    <div class="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-xl font-bold">
+      HC
+    </div>
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold">Hidden Cost</h1>
+      <p class="text-gray-600 text-sm">Plan smarter. Avoid surprises.</p>
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl shadow p-6">
+  <!-- Form -->
+  <div class="grid md:grid-cols-3 gap-4">
+    <select id="country" class="p-3 border rounded-lg">
+      <option value="canada">Canada</option>
+      <option value="germany">Germany</option>
+      <option value="france">France</option>
+      <option value="usa">USA</option>
+      <option value="uk">UK</option>
+    </select>
 
-    <div class="grid md:grid-cols-3 gap-4">
-      <select id="country" class="p-3 border rounded-lg">
-        <option value="canada">Canada</option>
-        <option value="germany">Germany</option>
-        <option value="france">France</option>
-        <option value="uk">UK</option>
-        <option value="usa">USA</option>
-        <option value="australia">Australia</option>
-        <option value="netherlands">Netherlands</option>
-        <option value="sweden">Sweden</option>
-        <option value="ireland">Ireland</option>
-        <option value="spain">Spain</option>
-      </select>
+    <select id="purpose" class="p-3 border rounded-lg">
+      <option value="study">Study</option>
+      <option value="work">Work</option>
+    </select>
 
-      <select id="purpose" class="p-3 border rounded-lg">
-        <option value="study">Study</option>
-        <option value="work">Work</option>
-        <option value="immigration">Immigration</option>
-        <option value="digital-nomad">Digital Nomad</option>
-        <option value="internship">Internship</option>
-      </select>
+    <input id="budget" type="number" placeholder="Monthly budget ($)" class="p-3 border rounded-lg">
+  </div>
 
-      <input id="budget" type="number" placeholder="Monthly budget" class="p-3 border rounded-lg">
-    </div>
+  <button onclick="analyze()" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700">
+    Reveal Hidden Costs
+  </button>
 
-    <button onclick="analyze(true)" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700">
-      Reveal Hidden Costs
-    </button>
+  <!-- Results -->
+  <div id="results" class="hidden mt-6 bg-white p-6 rounded-xl border">
+    <h2 id="title" class="text-xl font-bold mb-4"></h2>
 
-    <div id="loading" class="hidden text-center mt-6 font-semibold">
-      Analyzing your situation...
-    </div>
+    <h3 class="font-semibold mb-2">One-time costs</h3>
+    <ul id="oneTime" class="list-disc pl-5 mb-4"></ul>
 
-    <div id="results" class="hidden mt-8">
+    <h3 class="font-semibold mb-2">Monthly costs</h3>
+    <ul id="monthly" class="list-disc pl-5"></ul>
+  </div>
 
-      <h2 id="title" class="text-2xl font-bold mb-4"></h2>
-
-      <div class="grid md:grid-cols-2 gap-4">
-
-        <div class="bg-gray-50 p-4 rounded-xl">
-          <h3 class="font-semibold">One-Time Costs</h3>
-          <ul id="oneTime" class="mt-2 text-sm"></ul>
-        </div>
-
-        <div class="bg-gray-50 p-4 rounded-xl">
-          <h3 class="font-semibold">Setup Costs</h3>
-          <ul id="setup" class="mt-2 text-sm"></ul>
-        </div>
-
-        <div class="bg-gray-50 p-4 rounded-xl">
-          <h3 class="font-semibold">Monthly Costs</h3>
-          <ul id="monthly" class="mt-2 text-sm"></ul>
-        </div>
-
-        <div class="bg-yellow-50 p-4 rounded-xl border-l-4 border-yellow-400">
-          <h3 class="font-semibold">⚠️ Unexpected Costs</h3>
-          <ul id="surprise" class="mt-2 text-sm"></ul>
-        </div>
-
-      </div>
-
-      <div id="summary" class="mt-6 text-center bg-green-100 p-4 rounded-xl font-bold"></div>
-
-      <div id="reaction" class="mt-4 p-3 rounded-lg bg-yellow-100"></div>
-
-      <!-- SEO CONTENT BLOCK -->
-      <div id="seoContent" class="mt-8 bg-white p-6 rounded-xl border">
-        <h3 class="text-xl font-bold mb-2">About these costs</h3>
-        <p id="seoText" class="text-gray-700 text-sm"></p>
-      </div>
-
-      <!-- Internal Links -->
-      <div id="internalLinks" class="mt-8 bg-gray-50 p-4 rounded-xl">
-        <h3 class="font-semibold mb-2">Explore other destinations</h3>
-        <div id="linksContainer" class="text-sm space-y-1"></div>
-      </div>
-
-    </div>
-
-    </div>
-
-<!-- Blog Section -->
-<div id="blogContainer" class="hidden max-w-3xl mx-auto mt-10 bg-white p-6 rounded-2xl shadow">
-  <h1 id="blogTitle" class="text-3xl font-bold mb-4"></h1>
-  <div id="blogContent" class="text-gray-700 space-y-4 text-sm leading-relaxed"></div>
-
-  <!-- Back Button -->
-  <a href="/" class="inline-block mt-6 text-blue-600 hover:underline">← Back to calculator</a>
-</div>
+  <!-- Internal Links -->
+  <div id="linksContainer" class="mt-8"></div>
 
 </div>
 
 <script>
 
-// BLOG DATA (add your articles here)
-const blogData = {
-  "moving-to-canada-cost-guide": {
-    title: "Moving to Canada: Full Cost Breakdown",
-    content: `
-      <p>Moving to Canada involves more than just visa fees.</p>
-      <p>You need to consider rent deposits, insurance, and living expenses.</p>
-      <p>Use our calculator to estimate your real costs before moving.</p>
-    `
-  },
-  "study-abroad-hidden-costs": {
-    title: "Hidden Costs of Studying Abroad",
-    content: `
-      <p>Many students underestimate the cost of studying abroad.</p>
-      <p>Hidden costs include housing deposits, paperwork, and transport.</p>
-      <p>Planning ahead can save you thousands.</p>
-    `
-  }
-};
+// DATA
 const data = {
   canada: {
     study: {
-      oneTime: ["Visa (~$150)", "Translation", "Application"],
-      setup: ["Deposit", "Furniture"],
-      monthly: ["Insurance", "Transport"],
-      surprise: ["Proof of funds", "Winter costs"],
-      budget: "$3000 - $6000"
+      oneTime: ["Visa fee", "Flight ticket", "Initial rent deposit"],
+      monthly: ["Rent", "Food", "Transport"]
     },
     work: {
-      oneTime: ["Work visa", "Documents"],
-      setup: ["Deposit", "Furniture"],
-      monthly: ["Insurance", "Transport"],
-      surprise: ["Taxes", "Delays"],
-      budget: "$4000 - $7000"
+      oneTime: ["Work permit", "Flight", "Setup costs"],
+      monthly: ["Rent", "Utilities", "Transport"]
+    }
+  },
+  germany: {
+    study: {
+      oneTime: ["Visa", "Blocked account", "Flight"],
+      monthly: ["Rent", "Food", "Insurance"]
+    },
+    work: {
+      oneTime: ["Work visa", "Relocation"],
+      monthly: ["Rent", "Transport", "Insurance"]
+    }
+  },
+  france: {
+    study: {
+      oneTime: ["Visa", "Campus fees"],
+      monthly: ["Rent", "Food", "Transport"]
+    },
+    work: {
+      oneTime: ["Work visa"],
+      monthly: ["Rent", "Bills", "Food"]
     }
   }
 };
 
-function getFallback() {
-  return {
-    oneTime: ["Visa", "Documents"],
-    setup: ["Deposit", "Setup"],
-    monthly: ["Insurance", "Food"],
-    surprise: ["Unexpected fees"],
-    budget: "$2000 - $5000"
-  };
-}
-
-function parseURL() {
-  const pathParts = window.location.pathname.split('/').filter(Boolean);
-
-  const appEl = document.getElementById('app');
-  const blogEl = document.getElementById('blogContainer');
-
-  // BLOG ROUTE
-  if (pathParts[0] === 'blog' && pathParts[1]) {
-    if (appEl) appEl.style.display = 'none';
-    if (blogEl) blogEl.classList.remove('hidden');
-    showBlog(pathParts[1]);
-    return;
-  }
-
-  // DEFAULT (calculator)
-  if (appEl) appEl.style.display = 'block';
-  if (blogEl) blogEl.classList.add('hidden');
-
-  let country = pathParts[0];
-  let purpose = pathParts[1];
-
-  if (country) document.getElementById('country').value = country;
-  if (purpose) document.getElementById('purpose').value = purpose;
-
-  if (country && purpose) analyze(false);
-}
-
-  let country = pathParts[0];
-  let purpose = pathParts[1];
-
-  if (country) document.getElementById('country').value = country;
-  if (purpose) document.getElementById('purpose').value = purpose;
-
-  if (country && purpose) analyze(false);
-}
-
-  let country = pathParts[0];
-  let purpose = pathParts[1];
-
-  if (country) document.getElementById('country').value = country;
-  if (purpose) document.getElementById('purpose').value = purpose;
-
-  if (country && purpose) analyze(false);
-}
-
-function updateURL() {
+// ANALYZE FUNCTION
+function analyze() {
   const country = document.getElementById('country').value;
   const purpose = document.getElementById('purpose').value;
-  const newURL = `/${country}/${purpose}`;
-  window.history.replaceState({}, '', newURL);
-}
 
-function analyze(updateRoute = false) {
-  if (updateRoute) updateURL();
-  document.getElementById('loading').classList.remove('hidden');
-  document.getElementById('results').classList.add('hidden');
-  setTimeout(showResults, 800);
-}
+  const result = data[country]?.[purpose];
 
-function showResults() {
-  const country = document.getElementById('country').value;
-  const purpose = document.getElementById('purpose').value;
-  const budget = document.getElementById('budget').value;
+  if (!result) return;
 
-  const prettyCountry = country.charAt(0).toUpperCase() + country.slice(1);
-  const prettyPurpose = purpose.charAt(0).toUpperCase() + purpose.slice(1);
-
-  const titleText = `Hidden Costs of Moving to ${prettyCountry} for ${prettyPurpose}`;
-  document.title = titleText;
-
-  // Meta description
-  const desc = `Estimate hidden costs of moving to ${prettyCountry} for ${prettyPurpose}. Includes rent, visa, setup, and unexpected expenses.`;
-  document.getElementById('meta-desc').setAttribute('content', desc);
-
-  // OG tags
-  document.getElementById('og-title').setAttribute('content', titleText);
-  document.getElementById('og-desc').setAttribute('content', desc);
-
-  let result = (data[country] && data[country][purpose]) ? data[country][purpose] : getFallback();
-
-  document.getElementById('title').innerText = `Moving to ${country} (${purpose})`;
-
-  fill('oneTime', result.oneTime);
-  fill('setup', result.setup);
-  fill('monthly', result.monthly);
-  fill('surprise', result.surprise);
-
-  document.getElementById('summary').innerText = `Estimated: ${result.budget}`;
-
-  let msg = "";
-  if (budget) {
-    if (budget < 2000) msg = "⚠️ Risky budget";
-    else if (budget > 5000) msg = "✅ Comfortable";
-    else msg = "🟡 Moderate";
-  }
-  document.getElementById('reaction').innerText = msg;
-
-  // SEO content (dynamic per country/purpose)
-  let seoBlock = (typeof seoData !== 'undefined' && seoData[country] && seoData[country][purpose])
-    ? seoData[country][purpose]
-    : null;
-
-  let seoText;
-  if (seoBlock) {
-    seoText = seoBlock.intro + " " + seoBlock.tip;
-  } else {
-    seoText = `Planning to move to ${prettyCountry} for ${prettyPurpose}? Be aware of hidden costs like rent deposits, visa fees, and unexpected expenses.`;
-  }
-
-  document.getElementById('seoText').innerText = seoText;
-
-  // Render internal links
-  renderInternalLinks(country, purpose);
-
-  document.getElementById('loading').classList.add('hidden');
   document.getElementById('results').classList.remove('hidden');
-}
+  document.getElementById('title').innerText =
+    `Hidden costs for ${country} (${purpose})`;
 
-function fill(id, arr) {
-  const el = document.getElementById(id);
-  el.innerHTML = '';
-  for (let i = 0; i < arr.length; i++) {
+  const oneTimeList = document.getElementById('oneTime');
+  const monthlyList = document.getElementById('monthly');
+
+  oneTimeList.innerHTML = '';
+  monthlyList.innerHTML = '';
+
+  result.oneTime.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = '• ' + arr[i];
-    el.appendChild(li);
-  }
+    li.textContent = item;
+    oneTimeList.appendChild(li);
+  });
+
+  result.monthly.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    monthlyList.appendChild(li);
+  });
+
+  renderLinks(country, purpose);
 }
-const seoData = {
-  canada: {
-    study: { intro: "Canada is one of the most popular destinations for international students.", tip: "Be prepared for high rent deposits and proof of funds requirements." },
-    work: { intro: "Canada offers strong job opportunities for immigrants.", tip: "Expect taxes, insurance, and relocation costs." },
-    immigration: { intro: "Immigrating to Canada requires solid financial planning.", tip: "Settlement funds are often underestimated." },
-    "digital-nomad": { intro: "Canada is less common for digital nomads.", tip: "Living costs are relatively high." },
-    internship: { intro: "Internships in Canada are competitive.", tip: "Short-term housing costs can add up." }
-  },
-  germany: {
-    study: { intro: "Germany is known for affordable education.", tip: "Students must prepare a blocked account (~€11,000)." },
-    work: { intro: "Germany has a strong job market.", tip: "Taxes and bureaucracy can increase costs." },
-    immigration: { intro: "Immigration to Germany is structured but strict.", tip: "Housing shortages increase upfront costs." },
-    "digital-nomad": { intro: "Germany is growing for remote workers.", tip: "Health insurance is mandatory." },
-    internship: { intro: "Internships in Germany are valuable.", tip: "Living costs in cities can be high." }
-  },
-  france: {
-    study: { intro: "France attracts students with affordable tuition.", tip: "Housing deposits are a major hidden cost." },
-    work: { intro: "Working in France offers stability.", tip: "Taxes and admin delays can affect finances." },
-    immigration: { intro: "Moving to France requires preparation.", tip: "Expect upfront housing costs." },
-    "digital-nomad": { intro: "France is popular for digital nomads.", tip: "Costs vary by city." },
-    internship: { intro: "Internships in France are common.", tip: "Transport and rent costs add up." }
-  },
-  uk: {
-    study: { intro: "The UK is a top student destination.", tip: "Tuition and living costs are high." },
-    work: { intro: "The UK job market is competitive.", tip: "Visa and rent deposits are costly." },
-    immigration: { intro: "Immigrating to the UK is expensive.", tip: "Healthcare surcharge adds costs." },
-    "digital-nomad": { intro: "The UK is not cheap for nomads.", tip: "High cost of living is a challenge." },
-    internship: { intro: "UK internships boost careers.", tip: "Housing is expensive short-term." }
-  },
-  usa: {
-    study: { intro: "The USA offers top universities.", tip: "Healthcare and tuition are expensive." },
-    work: { intro: "The USA offers high salaries.", tip: "Insurance and relocation are costly." },
-    immigration: { intro: "US immigration is complex.", tip: "Legal and healthcare costs are high." },
-    "digital-nomad": { intro: "The USA varies by state.", tip: "Living costs differ widely." },
-    internship: { intro: "US internships are competitive.", tip: "Visa and rent costs are high." }
-  },
-  australia: {
-    study: { intro: "Australia is popular for students.", tip: "High rent and visa costs." },
-    work: { intro: "Australia offers strong job prospects.", tip: "Cost of living is high." },
-    immigration: { intro: "Australia requires financial readiness.", tip: "Application fees are high." },
-    "digital-nomad": { intro: "Australia attracts remote workers.", tip: "Expenses add up quickly." },
-    internship: { intro: "Internships provide global exposure.", tip: "Travel and housing are costly." }
-  },
-  netherlands: {
-    study: { intro: "The Netherlands offers English programs.", tip: "Housing shortages raise costs." },
-    work: { intro: "The Netherlands attracts expats.", tip: "Rent and taxes are high." },
-    immigration: { intro: "Immigrating is structured.", tip: "Setup costs are significant." },
-    "digital-nomad": { intro: "Popular for remote workers.", tip: "Living costs are high." },
-    internship: { intro: "Internships are common.", tip: "Housing is challenging." }
-  },
-  sweden: {
-    study: { intro: "Sweden offers quality education.", tip: "Living costs are high." },
-    work: { intro: "Sweden has good work-life balance.", tip: "Taxes are significant." },
-    immigration: { intro: "Moving to Sweden needs planning.", tip: "Housing is expensive." },
-    "digital-nomad": { intro: "Attractive for remote workers.", tip: "Costs are high." },
-    internship: { intro: "Internships are competitive.", tip: "Expenses can be high." }
-  },
-  ireland: {
-    study: { intro: "Ireland is popular for students.", tip: "Housing shortages increase costs." },
-    work: { intro: "Ireland has a growing job market.", tip: "Rent is expensive." },
-    immigration: { intro: "Ireland requires planning.", tip: "High cost of living." },
-    "digital-nomad": { intro: "Remote workers choose Ireland.", tip: "Expenses are high." },
-    internship: { intro: "Internships are valuable.", tip: "Accommodation is costly." }
-  },
-  spain: {
-    study: { intro: "Spain offers affordable lifestyle.", tip: "Still includes hidden fees." },
-    work: { intro: "Spain offers relaxed lifestyle.", tip: "Salaries may be lower." },
-    immigration: { intro: "Spain is accessible.", tip: "Admin delays possible." },
-    "digital-nomad": { intro: "Top nomad destination.", tip: "Popular cities are expensive." },
-    internship: { intro: "Internships are common.", tip: "Pay is often low." }
-  }
-};
 
+// INTERNAL LINKS
+function renderLinks(currentCountry, currentPurpose) {
+  const container = document.getElementById('linksContainer');
+  container.innerHTML = '';
 
-
-function renderInternalLinks(currentCountry, currentPurpose) {
-  const linksContainer = document.getElementById('linksContainer');
-  linksContainer.innerHTML = '';
-
-  const countries = Object.keys(seoData);
-
-  // Create ONE grid container
   const grid = document.createElement('div');
   grid.className = 'grid grid-cols-2 md:grid-cols-3 gap-2';
 
-  for (let i = 0; i < countries.length; i++) {
-    const c = countries[i];
-    const purposes = Object.keys(seoData[c]);
-
-    for (let j = 0; j < purposes.length; j++) {
-      const p = purposes[j];
-
-      if (c === currentCountry && p === currentPurpose) continue;
+  Object.keys(data).forEach(c => {
+    Object.keys(data[c]).forEach(p => {
+      if (c === currentCountry && p === currentPurpose) return;
 
       const a = document.createElement('a');
       a.href = `/${c}/${p}`;
       a.textContent = `${c} (${p})`;
-      a.className = 'block text-blue-600 hover:underline';
+      a.className = 'text-blue-600 hover:underline';
 
       grid.appendChild(a);
-    }
-  }
+    });
+  });
 
-  linksContainer.appendChild(grid);
+  container.appendChild(grid);
 }
 
-const blogData = {
-  "moving-to-canada-cost-guide": {
-    title: "Moving to Canada: Full Cost Breakdown",
-    content: `
-      <p>Moving to Canada involves more than just visa fees.</p>
-      <p>You need to consider rent deposits, insurance, and living expenses.</p>
-      <p>Use our calculator to estimate your real costs before moving.</p>
-    `
-  },
-  "study-abroad-hidden-costs": {
-    title: "Hidden Costs of Studying Abroad",
-    content: `
-      <p>Many students underestimate the cost of studying abroad.</p>
-      <p>Hidden costs include housing deposits, paperwork, and transport.</p>
-      <p>Planning ahead can save you thousands.</p>
-    `
+// URL ROUTING
+function parseURL() {
+  const path = window.location.pathname.split('/').filter(Boolean);
+
+  if (path.length === 2) {
+    document.getElementById('country').value = path[0];
+    document.getElementById('purpose').value = path[1];
+    analyze();
   }
-};
-
-function showBlog(slug) {
-  const blog = blogData[slug];
-  if (!blog) return;
-
-  const blogEl = document.getElementById('blogContainer');
-  if (blogEl) blogEl.classList.remove('hidden');
-
-  document.getElementById('blogTitle').innerText = blog.title;
-  document.getElementById('blogContent').innerHTML = blog.content;
-
-  document.title = blog.title;
 }
 
-window.onload = function() {
-  parseURL();
-};
+window.onload = parseURL;
+
 </script>
 
 </body>
